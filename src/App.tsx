@@ -132,7 +132,7 @@ function App() {
 
   // Contacts state
   const [contacts, setContacts] = useState<Contact[]>(() => {
-    const saved = localStorage.getItem('crm_contacts_v3');
+    const saved = localStorage.getItem('crm_contacts_v4');
     return saved ? JSON.parse(saved) : [];
   });
   const [showAddContact, setShowAddContact] = useState(false);
@@ -143,7 +143,7 @@ function App() {
 
   // Companies state
   const [companies, setCompanies] = useState<Company[]>(() => {
-    const saved = localStorage.getItem('crm_companies_v3');
+    const saved = localStorage.getItem('crm_companies_v4');
     return saved ? JSON.parse(saved) : [];
   });
   const [showAddCompany, setShowAddCompany] = useState(false);
@@ -154,7 +154,7 @@ function App() {
 
   // Tech tasks state
   const [techTasks, setTechTasks] = useState<TechTask[]>(() => {
-    const saved = localStorage.getItem('crm_tech_tasks_v3');
+    const saved = localStorage.getItem('crm_tech_tasks_v4');
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -176,7 +176,7 @@ function App() {
 
   // Activity Log modal state
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
-    const saved = localStorage.getItem('crm_activity_logs_v3');
+    const saved = localStorage.getItem('crm_activity_logs_v4');
     return saved ? JSON.parse(saved) : [];
   });
   const [showActivityModal, setShowActivityModal] = useState<number | null>(null);
