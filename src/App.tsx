@@ -104,18 +104,18 @@ function App() {
   const exportToPDF = () => {
     if (!reportRef.current) return;
     const opt = {
-      margin:       10,
-      filename:     `Weekly_Report_${reportStartDate}_to_${reportEndDate}.pdf`,
-      image:        { type: 'jpeg' as 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as 'portrait' }
+      margin: 10,
+      filename: `Weekly_Report_${reportStartDate}_to_${reportEndDate}.pdf`,
+      image: { type: 'jpeg' as 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as 'portrait' }
     };
     html2pdf().from(reportRef.current).set(opt).save();
   };
 
   // Pipeline state
   const [deals, setDeals] = useState<Deal[]>(() => {
-    const saved = localStorage.getItem('crm_deals_v3');
+    const saved = localStorage.getItem('crm_deals_v5');
     if (saved) {
       const parsedDeals = JSON.parse(saved);
       return parsedDeals.map((d: any) => ({
@@ -132,7 +132,7 @@ function App() {
 
   // Contacts state
   const [contacts, setContacts] = useState<Contact[]>(() => {
-    const saved = localStorage.getItem('crm_contacts_v4');
+    const saved = localStorage.getItem('crm_contacts_v5');
     return saved ? JSON.parse(saved) : [];
   });
   const [showAddContact, setShowAddContact] = useState(false);
@@ -143,7 +143,7 @@ function App() {
 
   // Companies state
   const [companies, setCompanies] = useState<Company[]>(() => {
-    const saved = localStorage.getItem('crm_companies_v4');
+    const saved = localStorage.getItem('crm_companies_v5');
     return saved ? JSON.parse(saved) : [];
   });
   const [showAddCompany, setShowAddCompany] = useState(false);
@@ -154,7 +154,7 @@ function App() {
 
   // Tech tasks state
   const [techTasks, setTechTasks] = useState<TechTask[]>(() => {
-    const saved = localStorage.getItem('crm_tech_tasks_v4');
+    const saved = localStorage.getItem('crm_tech_tasks_v5');
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -176,7 +176,7 @@ function App() {
 
   // Activity Log modal state
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
-    const saved = localStorage.getItem('crm_activity_logs_v4');
+    const saved = localStorage.getItem('crm_activity_logs_v5');
     return saved ? JSON.parse(saved) : [];
   });
   const [showActivityModal, setShowActivityModal] = useState<number | null>(null);
@@ -197,12 +197,12 @@ function App() {
   const [selectedEmail, setSelectedEmail] = useState<any>(null);
   const [mailForm, setMailForm] = useState({ subject: '', to: '', content: '', attachmentName: '', scheduledDate: '' });
   const [emails, setEmails] = useState<any[]>(() => {
-    const saved = localStorage.getItem('crm_emails_v3');
+    const saved = localStorage.getItem('crm_emails_v5');
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('crm_emails_v3', JSON.stringify(emails));
+    localStorage.setItem('crm_emails_v5', JSON.stringify(emails));
   }, [emails]);
 
   // Simulate scheduled emails being sent
@@ -236,7 +236,7 @@ function App() {
     const meetDate = new Date(t.schedule);
     meetDate.setHours(0, 0, 0, 0);
     const diffDays = Math.ceil((meetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (t.title.includes('Follow-up')) {
       return diffDays <= 7 && diffDays >= 0; // H-7 for repeat orders
     }
@@ -253,18 +253,18 @@ function App() {
     const meetDate = new Date(t.schedule);
     meetDate.setHours(0, 0, 0, 0);
     const diffDays = Math.ceil((meetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     return diffDays <= 2 && diffDays >= -7;
   });
 
   const managerNotifications = deals.filter(d => d.stage === 'Closed Won' || d.stage === 'Closed Lost').sort((a, b) => b.id - a.id).slice(0, 5);
   const isManagerNotification = userRole === 'sales manager' || userRole === 'superadmin';
   const isTeknisiNotification = userRole === 'teknisi';
-  
-  const activeNotificationsCount = isManagerNotification 
-    ? managerNotifications.length 
-    : isTeknisiNotification 
-      ? teknisiNotifications.length 
+
+  const activeNotificationsCount = isManagerNotification
+    ? managerNotifications.length
+    : isTeknisiNotification
+      ? teknisiNotifications.length
       : upcomingMeetings.length;
 
   const renderNotificationBell = () => (
@@ -288,66 +288,66 @@ function App() {
           </div>
           <div style={{ maxHeight: '300px', overflow: 'auto' }}>
             {isManagerNotification ? (
-               managerNotifications.length === 0 ? (
-                 <div style={{ padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>Belum ada notifikasi deal baru</div>
-               ) : (
-                 managerNotifications.map(d => (
-                    <div key={`mgr-notif-${d.id}`} style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: d.stage === 'Closed Won' ? '#059669' : '#DC2626', marginBottom: '4px' }}>
-                        {d.stage === 'Closed Won' ? '🎉 Deal Won!' : '⚠️ Deal Lost'}
+              managerNotifications.length === 0 ? (
+                <div style={{ padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>Belum ada notifikasi deal baru</div>
+              ) : (
+                managerNotifications.map(d => (
+                  <div key={`mgr-notif-${d.id}`} style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: d.stage === 'Closed Won' ? '#059669' : '#DC2626', marginBottom: '4px' }}>
+                      {d.stage === 'Closed Won' ? '🎉 Deal Won!' : '⚠️ Deal Lost'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#475569' }}>
+                      <strong>{d.title}</strong> - {d.contact}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                      Value: {formatShortRupiah(d.value)}
+                    </div>
+                  </div>
+                ))
+              )
+            ) : isTeknisiNotification ? (
+              teknisiNotifications.length === 0 ? (
+                <div style={{ padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>Belum ada tugas mendesak</div>
+              ) : (
+                teknisiNotifications.map(t => {
+                  const diff = Math.ceil((new Date(t.schedule).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                  let label = "Mendekati Jadwal";
+                  let color = "#F59E0B";
+                  if (diff < 0) { label = "Terlambat"; color = "#EF4444"; }
+                  else if (diff === 0) { label = "Hari Ini"; color = "#10B981"; }
+
+                  return (
+                    <div key={t.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: color, marginBottom: '4px' }}>[{label}] {t.title}</div>
+                      <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                        Klien: {t.contact}
                       </div>
-                      <div style={{ fontSize: '12px', color: '#475569' }}>
-                        <strong>{d.title}</strong> - {d.contact}
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-                        Value: {formatShortRupiah(d.value)}
+                      <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                        Jadwal: {t.schedule.replace('T', ' ')}
                       </div>
                     </div>
-                 ))
-               )
-            ) : isTeknisiNotification ? (
-               teknisiNotifications.length === 0 ? (
-                 <div style={{ padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>Belum ada tugas mendesak</div>
-               ) : (
-                 teknisiNotifications.map(t => {
-                   const diff = Math.ceil((new Date(t.schedule).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                   let label = "Mendekati Jadwal";
-                   let color = "#F59E0B";
-                   if (diff < 0) { label = "Terlambat"; color = "#EF4444"; }
-                   else if (diff === 0) { label = "Hari Ini"; color = "#10B981"; }
-                   
-                   return (
-                     <div key={t.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}>
-                       <div style={{ fontSize: '13px', fontWeight: 600, color: color, marginBottom: '4px' }}>[{label}] {t.title}</div>
-                       <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                         Klien: {t.contact}
-                       </div>
-                       <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                         Jadwal: {t.schedule.replace('T', ' ')}
-                       </div>
-                     </div>
-                   );
-                 })
-               )
+                  );
+                })
+              )
             ) : (
-               upcomingMeetings.length === 0 ? (
-                 <div style={{ padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>Belum ada notifikasi</div>
-               ) : (
-                 upcomingMeetings.map(m => {
-                   const diff = Math.ceil((new Date(m.schedule).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                   return (
-                     <div key={m.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}>
-                       <div style={{ fontSize: '13px', fontWeight: 600, color: '#1E293B', marginBottom: '4px' }}>Reminder: {m.title}</div>
-                       <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                         📅 {new Date(m.schedule).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                       </div>
-                       <div style={{ fontSize: '12px', color: '#EF4444', fontWeight: 600, marginTop: '4px' }}>
-                         {m.title.includes('Follow-up') ? 'Follow-up ' : 'Meeting '}H-{Math.max(0, diff)}
-                       </div>
-                     </div>
-                   );
-                 })
-               )
+              upcomingMeetings.length === 0 ? (
+                <div style={{ padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>Belum ada notifikasi</div>
+              ) : (
+                upcomingMeetings.map(m => {
+                  const diff = Math.ceil((new Date(m.schedule).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                  return (
+                    <div key={m.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#1E293B', marginBottom: '4px' }}>Reminder: {m.title}</div>
+                      <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                        📅 {new Date(m.schedule).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#EF4444', fontWeight: 600, marginTop: '4px' }}>
+                        {m.title.includes('Follow-up') ? 'Follow-up ' : 'Meeting '}H-{Math.max(0, diff)}
+                      </div>
+                    </div>
+                  );
+                })
+              )
             )}
           </div>
         </div>
@@ -357,12 +357,12 @@ function App() {
 
   // Save deals and tasks to localStorage
   useEffect(() => {
-    localStorage.setItem('crm_deals_v3', JSON.stringify(deals));
+    localStorage.setItem('crm_deals_v5', JSON.stringify(deals));
   }, [deals]);
 
   const saveActivityLog = (overrideType?: 'Online' | 'Offline', overrideLocation?: string) => {
     if (!showActivityModal || !activityForm.note) return;
-    
+
     const newLog: ActivityLog = {
       id: Date.now(),
       dealId: showActivityModal,
@@ -374,25 +374,25 @@ function App() {
     };
 
     setActivityLogs(prev => [...prev, newLog]);
-    
+
     // Reset form but keep modal open so they can see it added to timeline
     setActivityForm({ type: 'Online', locationOrPlatform: '', note: '' });
   };
 
   useEffect(() => {
-    localStorage.setItem('crm_activity_logs_v4', JSON.stringify(activityLogs));
+    localStorage.setItem('crm_activity_logs_v5', JSON.stringify(activityLogs));
   }, [activityLogs]);
 
   useEffect(() => {
-    localStorage.setItem('crm_tech_tasks_v4', JSON.stringify(techTasks));
+    localStorage.setItem('crm_tech_tasks_v5', JSON.stringify(techTasks));
   }, [techTasks]);
 
   useEffect(() => {
-    localStorage.setItem('crm_contacts_v4', JSON.stringify(contacts));
+    localStorage.setItem('crm_contacts_v5', JSON.stringify(contacts));
   }, [contacts]);
 
   useEffect(() => {
-    localStorage.setItem('crm_companies_v4', JSON.stringify(companies));
+    localStorage.setItem('crm_companies_v5', JSON.stringify(companies));
   }, [companies]);
 
   // Sync companies from deals
@@ -472,37 +472,37 @@ function App() {
       const isAlreadySelesai = task?.status === 'Selesai';
 
       if (!isAlreadySelesai) {
-        setTechTasks(techTasks.map(t => 
-          t.id === showReportModal ? { 
-            ...t, 
-            report: reportText, 
-            reportPhoto: reportPhoto, 
-            status: reportComplete ? 'Selesai' : t.status 
+        setTechTasks(techTasks.map(t =>
+          t.id === showReportModal ? {
+            ...t,
+            report: reportText,
+            reportPhoto: reportPhoto,
+            status: reportComplete ? 'Selesai' : t.status
           } : t
         ));
-        
+
         if (reportComplete && task) {
-           setDeals(deals.map(d => {
-             if (d.id === task.dealId) {
-               return {
-                 ...d,
-                 status: d.status === 'Tugas Teknisi Terkirim' ? 'Selesai' : d.status,
-                 postSalesStage: (!d.postSalesStage || d.postSalesStage === 'Menunggu Pengiriman') ? 'Menunggu BAST' : d.postSalesStage
-               };
-             }
-             return d;
-           }));
-           
-           const newLog: ActivityLog = {
-             id: Date.now(),
-             dealId: task.dealId,
-             date: new Date().toISOString(),
-             type: 'Offline',
-             locationOrPlatform: task.address || '-',
-             note: `[LAPORAN TEKNISI] Tugas diselesaikan. Catatan: ${reportText || '-'}`,
-             author: userName || 'Teknisi'
-           };
-           setActivityLogs(prev => [...prev, newLog]);
+          setDeals(deals.map(d => {
+            if (d.id === task.dealId) {
+              return {
+                ...d,
+                status: d.status === 'Tugas Teknisi Terkirim' ? 'Selesai' : d.status,
+                postSalesStage: (!d.postSalesStage || d.postSalesStage === 'Menunggu Pengiriman') ? 'Menunggu BAST' : d.postSalesStage
+              };
+            }
+            return d;
+          }));
+
+          const newLog: ActivityLog = {
+            id: Date.now(),
+            dealId: task.dealId,
+            date: new Date().toISOString(),
+            type: 'Offline',
+            locationOrPlatform: task.address || '-',
+            note: `[LAPORAN TEKNISI] Tugas diselesaikan. Catatan: ${reportText || '-'}`,
+            author: userName || 'Teknisi'
+          };
+          setActivityLogs(prev => [...prev, newLog]);
         }
         showToast('Laporan berhasil disimpan!', 'success');
       } else {
@@ -555,12 +555,12 @@ function App() {
     if (!role) { showToast("Anda belum login!", "error"); setCurrentView('login'); return; }
     if (role === 'superadmin' || allowedRoles.includes(role)) {
       if (moduleName === 'Sales') {
-        if (role === 'sales') { 
+        if (role === 'sales') {
           setActiveSidebarItem('pipelines');
-          setCurrentView('sales-pipeline'); 
-        } else { 
+          setCurrentView('sales-pipeline');
+        } else {
           setActiveSidebarItem('dashboard');
-          setCurrentView('dashboard'); 
+          setCurrentView('dashboard');
         }
       } else if (moduleName === 'Teknisi') {
         setActiveSidebarItem('activities');
@@ -613,7 +613,7 @@ function App() {
     setNewDeal({ title: '', contact: '', value: '', phone: '', email: '', company: '', status: 'Tidak Terhubung', needVisit: false, schedule: '', address: '' });
     setShowAddDeal(null);
     showToast('✅ Deal berhasil ditambahkan!', 'success');
-    
+
     if (stage === 'Closed Won') {
       openRepeatOrderModal(dealId);
     }
@@ -734,7 +734,7 @@ function App() {
       showToast('Harap masukkan tanggal estimasi repeat order', 'error');
       return;
     }
-    
+
     const deal = deals.find(d => d.id === repeatOrderModal.dealId);
     if (deal) {
       const newTask: TechTask = {
@@ -747,7 +747,7 @@ function App() {
         status: 'Pending'
       };
       setTechTasks([...techTasks, newTask]);
-      
+
       setDeals(deals.map(d => d.id === deal.id ? { ...d, stage: 'Closed Won', status: '', postSalesStage: 'Menunggu Pengiriman' } : d));
       showToast('🎉 Deal Disetujui & Jadwal Follow-up dibuat!', 'success');
     }
@@ -798,7 +798,7 @@ function App() {
       }
       return d;
     }));
-    
+
     // Add activity log
     const newLog: ActivityLog = {
       id: Date.now(),
@@ -922,14 +922,14 @@ function App() {
     const roleFilteredTasks = (userRole === 'leader sales' || userRole === 'sales manager')
       ? techTasks.filter(t => !t.title.toLowerCase().includes('pemasangan'))
       : userRole === 'teknisi'
-      ? techTasks.filter(t => {
+        ? techTasks.filter(t => {
           const lowerTitle = t.title.toLowerCase();
           return lowerTitle.includes('pemasangan') || lowerTitle.includes('kirim') || lowerTitle.includes('pengiriman') || lowerTitle.includes('maintenance') || lowerTitle.includes('kunjungan') || lowerTitle.includes('perbaikan');
         })
-      : techTasks;
+        : techTasks;
 
-    const tasksToRender = taskFilter === 'Semua' 
-      ? roleFilteredTasks 
+    const tasksToRender = taskFilter === 'Semua'
+      ? roleFilteredTasks
       : roleFilteredTasks.filter(t => t.title.includes(taskFilter));
 
     const getTasksForDate = (dateStr: string) => {
@@ -1148,15 +1148,15 @@ function App() {
                           )}
                         </div>
                         <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end' }}>
-                          <button 
+                          <button
                             type="button"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                                    setShowReportModal(task.id || Date.now());
-                                    setReportText(task.report || '');
-                                    setReportPhoto(task.reportPhoto || '');
-                                    setReportComplete(task.status === 'Selesai');
+                              setShowReportModal(task.id || Date.now());
+                              setReportText(task.report || '');
+                              setReportPhoto(task.reportPhoto || '');
+                              setReportComplete(task.status === 'Selesai');
                             }}
                             style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
                           >
@@ -1176,8 +1176,8 @@ function App() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 24px', borderBottom: '1px solid #e5e7eb' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span style={{ fontWeight: 700, fontSize: '14px', color: '#1C4E80' }}>All Tasks</span>
-                  <select 
-                    value={taskFilter} 
+                  <select
+                    value={taskFilter}
                     onChange={e => setTaskFilter(e.target.value as any)}
                     style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '12px', outline: 'none' }}
                   >
@@ -1189,7 +1189,7 @@ function App() {
                 </div>
                 <div>
                   {userRole !== 'teknisi' && (
-                    <button 
+                    <button
                       onClick={() => setNewTaskModal({ isOpen: true })}
                       style={{ padding: '8px 20px', borderRadius: '6px', background: '#10B981', color: '#fff', border: 'none', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}>
                       + Task
@@ -1224,9 +1224,9 @@ function App() {
                           <tr key={task.id}>
                             <td><input type="checkbox" /></td>
                             <td style={{ fontWeight: 600, color: '#1E293B' }}>{task.title}</td>
-                            <td style={{ 
-                              color: task.status !== 'Selesai' && task.schedule && task.schedule.split('T')[0] < todayStr ? '#DC2626' : 
-                                     task.status !== 'Selesai' && task.schedule && task.schedule.split('T')[0] === todayStr ? '#D97706' : 'inherit',
+                            <td style={{
+                              color: task.status !== 'Selesai' && task.schedule && task.schedule.split('T')[0] < todayStr ? '#DC2626' :
+                                task.status !== 'Selesai' && task.schedule && task.schedule.split('T')[0] === todayStr ? '#D97706' : 'inherit',
                               fontWeight: task.status !== 'Selesai' && task.schedule && task.schedule.split('T')[0] <= todayStr ? 700 : 400
                             }}>
                               {task.schedule && task.schedule !== '-' ? new Date(task.schedule).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
@@ -1317,22 +1317,22 @@ function App() {
                 <div className="crm-modal-form">
                   <div style={{ marginBottom: '16px' }}>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Detail Laporan / Catatan Maintenance</label>
-                    <textarea 
-                      value={reportText} 
-                      onChange={e => setReportText(e.target.value)} 
+                    <textarea
+                      value={reportText}
+                      onChange={e => setReportText(e.target.value)}
                       readOnly={!canEdit}
-                      placeholder={canEdit ? 'Tuliskan hasil survei atau maintenance di sini...' : 'Belum ada catatan.'} 
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', minHeight: '120px', fontSize: '14px', resize: 'vertical', background: !canEdit ? '#f8fafc' : '#fff' }} 
+                      placeholder={canEdit ? 'Tuliskan hasil survei atau maintenance di sini...' : 'Belum ada catatan.'}
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', minHeight: '120px', fontSize: '14px', resize: 'vertical', background: !canEdit ? '#f8fafc' : '#fff' }}
                     />
                   </div>
                   <div style={{ marginBottom: '20px' }}>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Foto Lampiran</label>
                     {canEdit && (
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={handlePhotoUpload} 
-                        style={{ display: 'block', marginBottom: '12px', fontSize: '13px' }} 
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        style={{ display: 'block', marginBottom: '12px', fontSize: '13px' }}
                       />
                     )}
                     {reportPhoto ? (
@@ -1341,7 +1341,7 @@ function App() {
                       <div style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic' }}>Belum ada foto lampiran</div>
                     )}
                   </div>
-                  
+
                   {canEdit && (
                     <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <input type="checkbox" id="markComplete" checked={reportComplete} onChange={e => setReportComplete(e.target.checked)} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
@@ -1349,7 +1349,7 @@ function App() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="crm-modal-actions">
                   <button className="btn-cancel" onClick={() => setShowReportModal(null)}>Tutup</button>
                   {canEdit && (
@@ -1362,49 +1362,49 @@ function App() {
         })()}
 
         {newTaskModal.isOpen && (
-            <div className="crm-modal-overlay">
-              <div className="crm-modal">
-                <h3>Buat Tugas Baru</h3>
-                <div className="crm-modal-form">
-                  <div className="form-group">
-                    <label>Pilih Klien / Deal</label>
-                    <select value={newTaskForm.dealId} onChange={e => setNewTaskForm({ ...newTaskForm, dealId: e.target.value })} style={{ padding: '10px 12px', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', outline: 'none' }}>
-                      <option value="">-- Pilih Klien --</option>
-                      {deals.filter(d => d.stage === 'Closed Won').map(d => (
-                        <option key={d.id} value={d.id}>{d.title} ({d.contact})</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Jenis Pekerjaan</label>
-                    <select value={newTaskForm.type} onChange={e => setNewTaskForm({ ...newTaskForm, type: e.target.value })} style={{ padding: '10px 12px', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', outline: 'none' }}>
-                      <option value="Maintenance">Maintenance Berkala</option>
-                      <option value="Kunjungan Rutin">Kunjungan Rutin (After-Sales)</option>
-                      <option value="Perbaikan Cepat">Perbaikan Cepat / Troubleshoot</option>
-                      <option value="Pemasangan">Pemasangan Baru</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Jadwal Pelaksanaan</label>
-                    <input type="datetime-local" value={newTaskForm.schedule} onChange={e => setNewTaskForm({ ...newTaskForm, schedule: e.target.value })} />
-                  </div>
-                  <div className="form-group">
-                    <label>Alamat Klien / Titik Kunjungan</label>
-                    <textarea rows={2} value={newTaskForm.address} onChange={e => setNewTaskForm({ ...newTaskForm, address: e.target.value })} placeholder="Alamat lengkap tujuan..." />
-                  </div>
-                  <div className="form-group">
-                    <label>Catatan Tambahan</label>
-                    <input type="text" value={newTaskForm.note} onChange={e => setNewTaskForm({ ...newTaskForm, note: e.target.value })} placeholder="Cth: Lakukan pengecekan filter" />
-                  </div>
+          <div className="crm-modal-overlay">
+            <div className="crm-modal">
+              <h3>Buat Tugas Baru</h3>
+              <div className="crm-modal-form">
+                <div className="form-group">
+                  <label>Pilih Klien / Deal</label>
+                  <select value={newTaskForm.dealId} onChange={e => setNewTaskForm({ ...newTaskForm, dealId: e.target.value })} style={{ padding: '10px 12px', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', outline: 'none' }}>
+                    <option value="">-- Pilih Klien --</option>
+                    {deals.filter(d => d.stage === 'Closed Won').map(d => (
+                      <option key={d.id} value={d.id}>{d.title} ({d.contact})</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Jenis Pekerjaan</label>
+                  <select value={newTaskForm.type} onChange={e => setNewTaskForm({ ...newTaskForm, type: e.target.value })} style={{ padding: '10px 12px', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '13px', outline: 'none' }}>
+                    <option value="Maintenance">Maintenance Berkala</option>
+                    <option value="Kunjungan Rutin">Kunjungan Rutin (After-Sales)</option>
+                    <option value="Perbaikan Cepat">Perbaikan Cepat / Troubleshoot</option>
+                    <option value="Pemasangan">Pemasangan Baru</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Jadwal Pelaksanaan</label>
+                  <input type="datetime-local" value={newTaskForm.schedule} onChange={e => setNewTaskForm({ ...newTaskForm, schedule: e.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label>Alamat Klien / Titik Kunjungan</label>
+                  <textarea rows={2} value={newTaskForm.address} onChange={e => setNewTaskForm({ ...newTaskForm, address: e.target.value })} placeholder="Alamat lengkap tujuan..." />
+                </div>
+                <div className="form-group">
+                  <label>Catatan Tambahan</label>
+                  <input type="text" value={newTaskForm.note} onChange={e => setNewTaskForm({ ...newTaskForm, note: e.target.value })} placeholder="Cth: Lakukan pengecekan filter" />
+                </div>
 
-                  <div className="crm-modal-actions">
-                    <button className="btn-cancel" onClick={() => setNewTaskModal({ isOpen: false })}>Batal</button>
-                    <button className="btn-save" onClick={submitNewTask} style={{ background: '#10B981' }}>Kirim Tugas ke Teknisi</button>
-                  </div>
+                <div className="crm-modal-actions">
+                  <button className="btn-cancel" onClick={() => setNewTaskModal({ isOpen: false })}>Batal</button>
+                  <button className="btn-save" onClick={submitNewTask} style={{ background: '#10B981' }}>Kirim Tugas ke Teknisi</button>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
         <div id="toast" className={`toast ${toast ? `show ${toast.type}` : ''}`}>{toast?.message}</div>
       </div>
@@ -1914,301 +1914,302 @@ function App() {
               {(() => {
                 const isMonitorOnly = userRole === 'leader sales' || userRole === 'superadmin';
                 return STAGES.map(stage => {
-                let stageDeals = deals.filter(d => d.stage === stage);
-                if (userRole !== 'leader sales' && userRole !== 'superadmin') {
-                  stageDeals = stageDeals.filter(d => d.owner === userName);
-                }
-                if (stage === 'Leads' && leadsFilter !== 'All') {
-                  stageDeals = stageDeals.filter(d => d.status === leadsFilter);
-                }
-                const stageTotal = stageDeals.reduce((sum, d) => sum + d.value, 0);
-                const isClosedWon = stage === 'Closed Won';
-                const isClosedLost = stage === 'Closed Lost';
-                return (
-                  <div
-                    key={stage}
-                    className={`crm-kanban-col ${draggedDeal ? 'drop-target' : ''}`}
-                    onDragOver={!isMonitorOnly ? handleDragOver : undefined}
-                    onDrop={!isMonitorOnly ? () => handleDrop(stage) : undefined}
-                  >
-                    <div className={`crm-col-header ${isClosedWon ? 'won' : ''} ${isClosedLost ? 'lost' : ''}`}>
-                      <div className="col-header-top">
-                        <span className="col-title">{stage}</span>
-                        {stage === 'Leads' && (
-                          <select
-                            value={leadsFilter}
-                            onChange={e => setLeadsFilter(e.target.value)}
-                            style={{ fontSize: '10px', padding: '2px 4px', border: '1px solid #CBD5E1', borderRadius: '4px', outline: 'none', background: '#fff', maxWidth: '100px' }}
+                  let stageDeals = deals.filter(d => d.stage === stage);
+                  if (userRole !== 'leader sales' && userRole !== 'superadmin') {
+                    stageDeals = stageDeals.filter(d => d.owner === userName);
+                  }
+                  if (stage === 'Leads' && leadsFilter !== 'All') {
+                    stageDeals = stageDeals.filter(d => d.status === leadsFilter);
+                  }
+                  const stageTotal = stageDeals.reduce((sum, d) => sum + d.value, 0);
+                  const isClosedWon = stage === 'Closed Won';
+                  const isClosedLost = stage === 'Closed Lost';
+                  return (
+                    <div
+                      key={stage}
+                      className={`crm-kanban-col ${draggedDeal ? 'drop-target' : ''}`}
+                      onDragOver={!isMonitorOnly ? handleDragOver : undefined}
+                      onDrop={!isMonitorOnly ? () => handleDrop(stage) : undefined}
+                    >
+                      <div className={`crm-col-header ${isClosedWon ? 'won' : ''} ${isClosedLost ? 'lost' : ''}`}>
+                        <div className="col-header-top">
+                          <span className="col-title">{stage}</span>
+                          {stage === 'Leads' && (
+                            <select
+                              value={leadsFilter}
+                              onChange={e => setLeadsFilter(e.target.value)}
+                              style={{ fontSize: '10px', padding: '2px 4px', border: '1px solid #CBD5E1', borderRadius: '4px', outline: 'none', background: '#fff', maxWidth: '100px' }}
+                            >
+                              <option value="All">Semua</option>
+                              <option value="Tidak Terhubung">Tidak Terhubung</option>
+                              <option value="Sudah Kontrak dengan Kompetitor">Kompetitor</option>
+                              <option value="Stock Masih Ada">Stock Ada</option>
+                              <option value="Tertarik">Tertarik</option>
+                            </select>
+                          )}
+                        </div>
+                        <div className="col-header-meta">
+                          <span className="col-total">{formatRupiah(stageTotal)}</span>
+                          <span className="col-count">· {stageDeals.length} Deal</span>
+                        </div>
+                      </div>
+
+                      <div className="crm-col-body">
+                        {stageDeals.length === 0 && (
+                          <div className="empty-stage">This stage is empty</div>
+                        )}
+                        {stageDeals.map(deal => (
+                          <div
+                            key={deal.id}
+                            className={`crm-deal-card ${deal.stage === 'Closed Won' ? 'won' : deal.stage === 'Closed Lost' ? 'lost' : ''}`}
+                            draggable={!isMonitorOnly}
+                            onDragStart={!isMonitorOnly ? () => handleDragStart(deal) : undefined}
                           >
-                            <option value="All">Semua</option>
-                            <option value="Tidak Terhubung">Tidak Terhubung</option>
-                            <option value="Sudah Kontrak dengan Kompetitor">Kompetitor</option>
-                            <option value="Stock Masih Ada">Stock Ada</option>
-                            <option value="Tertarik">Tertarik</option>
-                          </select>
+                            <div className="deal-card-top">
+                              <span className="deal-card-title">{deal.title}</span>
+                              {!isMonitorOnly && <button className="deal-delete-btn" onClick={() => deleteDeal(deal.id)} title="Hapus Deal">×</button>}
+                            </div>
+                            <div className="deal-card-contact">
+                              {deal.contact} {deal.phone && <span style={{ marginLeft: '4px', color: '#94A3B8' }}>• {deal.phone}</span>}
+                            </div>
+                            {(userRole === 'leader sales' || userRole === 'superadmin') && deal.owner && (
+                              <div style={{ fontSize: '11px', color: '#3B82F6', fontWeight: 600, marginBottom: '6px' }}>
+                                👤 {deal.owner}
+                              </div>
+                            )}
+                            {deal.status && (
+                              <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '8px', fontWeight: 600 }}>
+                                Status: <span style={{
+                                  color: deal.status === 'Masih Revisi' ? '#D97706' : '#0F172A',
+                                  background: deal.status === 'Masih Revisi' ? '#FEF3C7' : 'transparent',
+                                  padding: deal.status === 'Masih Revisi' ? '2px 6px' : '0',
+                                  borderRadius: deal.status === 'Masih Revisi' ? '4px' : '0'
+                                }}>{deal.status}</span>
+                              </div>
+                            )}
+                            {deal.stage === 'Leads' && deal.status === 'Tertarik' && !isMonitorOnly && (
+                              <button
+                                onClick={() => openAdvanceModal(deal.id)}
+                                style={{ width: '100%', padding: '6px', marginBottom: '12px', background: '#3B82F6', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+                              >
+                                Lanjut
+                              </button>
+                            )}
+                            <div className="deal-card-bottom">
+                              <span className="deal-card-value">{formatRupiah(deal.value)}</span>
+                              <span className="deal-card-date">{deal.date}</span>
+                            </div>
+
+                            <button
+                              onClick={() => setShowActivityModal(deal.id)}
+                              style={{
+                                width: '100%',
+                                marginTop: '8px',
+                                padding: '6px',
+                                background: '#F1F5F9',
+                                color: '#475569',
+                                border: '1px solid #CBD5E1',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px'
+                              }}
+                            >
+                              📝 Riwayat & Catatan
+                            </button>
+                            {deal.stage === 'Prospecting' && techTasks.some(t => t.dealId === deal.id) && (
+                              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0', fontSize: '11px', color: '#475569' }}>
+                                <div style={{ marginBottom: '6px', fontWeight: 600 }}>📅 {techTasks.find(t => t.dealId === deal.id)?.schedule?.replace('T', ' ')}</div>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={techTasks.find(t => t.dealId === deal.id)?.status === 'Selesai'}
+                                    onChange={() => toggleTechTaskStatus(deal.id)}
+                                    disabled={isMonitorOnly}
+                                  />
+                                  <span style={{ fontWeight: 500, color: techTasks.find(t => t.dealId === deal.id)?.status === 'Selesai' ? '#10B981' : '#475569' }}>
+                                    Sudah Melakukan Meeting
+                                  </span>
+                                </label>
+                              </div>
+                            )}
+                            {deal.stage === 'Proposal SPH' && (
+                              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0', fontSize: '11px', color: '#475569' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={false}
+                                    onChange={() => advanceToNegotiation(deal.id)}
+                                    disabled={isMonitorOnly}
+                                  />
+                                  <span style={{ fontWeight: 500 }}>
+                                    Sudah Mengirim Proposal SPH
+                                  </span>
+                                </label>
+                              </div>
+                            )}
+                            {deal.stage === 'Negotiation' && (
+                              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0' }}>
+                                <label style={{ fontSize: '11px', color: '#475569', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Status Negosiasi:</label>
+                                <select
+                                  value={deal.status || ''}
+                                  onChange={(e) => handleNegoStatus(deal.id, e.target.value)}
+                                  disabled={isMonitorOnly}
+                                  style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', border: '1px solid #CBD5E1', fontSize: '11px', outline: 'none', backgroundColor: '#F8FAFC', opacity: isMonitorOnly ? 0.6 : 1 }}
+                                >
+                                  <option value="">-- Pilih Status --</option>
+                                  <option value="Masih Revisi">Masih Revisi</option>
+                                  <option value="Disetujui">Disetujui (Closed Won)</option>
+                                  <option value="Ditolak">Ditolak (Closed Lost)</option>
+                                </select>
+                              </div>
+                            )}
+                            {deal.stage === 'Closed Won' && (
+                              <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #10B981' }}>
+                                {deal.status === 'Tugas Teknisi Terkirim' ? (
+                                  <div style={{ fontSize: '11px', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '6px', background: '#D1FAE5', borderRadius: '6px' }}>
+                                    <span>✅</span> Tugas Teknisi Terkirim
+                                  </div>
+                                ) : deal.status === 'Selesai' ? (
+                                  <div style={{ fontSize: '11px', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '6px', background: '#D1FAE5', borderRadius: '6px' }}>
+                                    <span>✅</span> Teknisi Selesai
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => openInstallModal(deal.id)}
+                                    disabled={isMonitorOnly}
+                                    style={{ width: '100%', padding: '6px', background: isMonitorOnly ? '#94A3B8' : '#10B981', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: '600', cursor: isMonitorOnly ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                  >
+                                    <span>🚚</span> Kirim ke Teknisi
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="crm-col-footer">
+                        {showAddDeal === stage ? (
+                          <div className="add-deal-form">
+                            {stage === 'Leads' ? (
+                              <>
+                                <input
+                                  type="text"
+                                  placeholder="Nama Kontak"
+                                  value={newDeal.contact}
+                                  onChange={e => setNewDeal({ ...newDeal, contact: e.target.value })}
+                                  autoFocus
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Nama Perusahaan"
+                                  value={newDeal.company}
+                                  onChange={e => setNewDeal({ ...newDeal, company: e.target.value })}
+                                />
+                                <input
+                                  type="email"
+                                  placeholder="Email"
+                                  value={newDeal.email}
+                                  onChange={e => setNewDeal({ ...newDeal, email: e.target.value })}
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Nomor Kontak"
+                                  value={newDeal.phone}
+                                  onChange={e => setNewDeal({ ...newDeal, phone: e.target.value })}
+                                />
+                                <select
+                                  value={newDeal.status}
+                                  onChange={e => setNewDeal({ ...newDeal, status: e.target.value })}
+                                >
+                                  <option value="Tidak Terhubung">Tidak Terhubung</option>
+                                  <option value="Sudah Kontrak dengan Kompetitor">Sudah Kontrak dengan Kompetitor</option>
+                                  <option value="Stock Masih Ada">Stock Masih Ada</option>
+                                  <option value="Tertarik">Tertarik</option>
+                                </select>
+                              </>
+                            ) : stage === 'Prospecting' ? (
+                              <>
+                                <input type="text" placeholder="Nama Deal" value={newDeal.title} onChange={e => setNewDeal({ ...newDeal, title: e.target.value })} autoFocus />
+                                <input type="text" placeholder="Nama Kontak" value={newDeal.contact} onChange={e => setNewDeal({ ...newDeal, contact: e.target.value })} />
+                                <input type="text" placeholder="Nama Perusahaan" value={newDeal.company} onChange={e => setNewDeal({ ...newDeal, company: e.target.value })} />
+                                <input type="email" placeholder="Email" value={newDeal.email} onChange={e => setNewDeal({ ...newDeal, email: e.target.value })} />
+                                <input type="text" placeholder="Nomor Kontak" value={newDeal.phone} onChange={e => setNewDeal({ ...newDeal, phone: e.target.value })} />
+                                <input type="number" placeholder="Nilai (Rp)" value={newDeal.value} onChange={e => setNewDeal({ ...newDeal, value: e.target.value })} />
+
+                                <div className="form-group-checkbox" style={{ margin: '4px 0' }}>
+                                  <input type="checkbox" id="addDealNeedVisit" checked={newDeal.needVisit} onChange={e => setNewDeal({ ...newDeal, needVisit: e.target.checked })} />
+                                  <label htmlFor="addDealNeedVisit" style={{ fontSize: '11px', color: '#475569' }}>Perlu Meeting?</label>
+                                </div>
+
+                                {newDeal.needVisit && (
+                                  <>
+                                    <input type="datetime-local" value={newDeal.schedule} onChange={e => setNewDeal({ ...newDeal, schedule: e.target.value })} style={{ marginBottom: '4px' }} />
+                                    <textarea rows={2} value={newDeal.address} onChange={e => setNewDeal({ ...newDeal, address: e.target.value })} placeholder="Alamat Visit" style={{ width: '100%', padding: '8px 10px', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '12px', fontFamily: 'inherit', outline: 'none' }} />
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <input
+                                  type="text"
+                                  placeholder="Nama Deal"
+                                  value={newDeal.title}
+                                  onChange={e => setNewDeal({ ...newDeal, title: e.target.value })}
+                                  autoFocus
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Nama Kontak"
+                                  value={newDeal.contact}
+                                  onChange={e => setNewDeal({ ...newDeal, contact: e.target.value })}
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Nama Perusahaan"
+                                  value={newDeal.company}
+                                  onChange={e => setNewDeal({ ...newDeal, company: e.target.value })}
+                                />
+                                <input
+                                  type="email"
+                                  placeholder="Email"
+                                  value={newDeal.email}
+                                  onChange={e => setNewDeal({ ...newDeal, email: e.target.value })}
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Nomor Kontak"
+                                  value={newDeal.phone}
+                                  onChange={e => setNewDeal({ ...newDeal, phone: e.target.value })}
+                                />
+                                <input
+                                  type="number"
+                                  placeholder="Nilai (Rp)"
+                                  value={newDeal.value}
+                                  onChange={e => setNewDeal({ ...newDeal, value: e.target.value })}
+                                />
+                              </>
+                            )}
+                            <div className="add-deal-actions">
+                              <button className="add-deal-save" onClick={() => addDeal(stage)}>Simpan</button>
+                              <button className="add-deal-cancel" onClick={() => { setShowAddDeal(null); setNewDeal({ title: '', contact: '', value: '', phone: '', email: '', company: '', status: 'Tidak Terhubung', needVisit: false, schedule: '', address: '' }); }}>Batal</button>
+                            </div>
+                          </div>
+                        ) : (
+                          userRole !== 'leader sales' && userRole !== 'superadmin' ? (
+                            <button className="add-deal-btn" onClick={() => setShowAddDeal(stage)}>+ Deal</button>
+                          ) : null
                         )}
                       </div>
-                      <div className="col-header-meta">
-                        <span className="col-total">{formatRupiah(stageTotal)}</span>
-                        <span className="col-count">· {stageDeals.length} Deal</span>
-                      </div>
                     </div>
-
-                    <div className="crm-col-body">
-                      {stageDeals.length === 0 && (
-                        <div className="empty-stage">This stage is empty</div>
-                      )}
-                      {stageDeals.map(deal => (
-                        <div
-                          key={deal.id}
-                          className={`crm-deal-card ${deal.stage === 'Closed Won' ? 'won' : deal.stage === 'Closed Lost' ? 'lost' : ''}`}
-                          draggable={!isMonitorOnly}
-                          onDragStart={!isMonitorOnly ? () => handleDragStart(deal) : undefined}
-                        >
-                          <div className="deal-card-top">
-                            <span className="deal-card-title">{deal.title}</span>
-                            {!isMonitorOnly && <button className="deal-delete-btn" onClick={() => deleteDeal(deal.id)} title="Hapus Deal">×</button>}
-                          </div>
-                          <div className="deal-card-contact">
-                            {deal.contact} {deal.phone && <span style={{ marginLeft: '4px', color: '#94A3B8' }}>• {deal.phone}</span>}
-                          </div>
-                          {(userRole === 'leader sales' || userRole === 'superadmin') && deal.owner && (
-                            <div style={{ fontSize: '11px', color: '#3B82F6', fontWeight: 600, marginBottom: '6px' }}>
-                              👤 {deal.owner}
-                            </div>
-                          )}
-                          {deal.status && (
-                            <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '8px', fontWeight: 600 }}>
-                              Status: <span style={{ 
-                                color: deal.status === 'Masih Revisi' ? '#D97706' : '#0F172A',
-                                background: deal.status === 'Masih Revisi' ? '#FEF3C7' : 'transparent',
-                                padding: deal.status === 'Masih Revisi' ? '2px 6px' : '0',
-                                borderRadius: deal.status === 'Masih Revisi' ? '4px' : '0'
-                              }}>{deal.status}</span>
-                            </div>
-                          )}
-                          {deal.stage === 'Leads' && deal.status === 'Tertarik' && !isMonitorOnly && (
-                            <button
-                              onClick={() => openAdvanceModal(deal.id)}
-                              style={{ width: '100%', padding: '6px', marginBottom: '12px', background: '#3B82F6', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
-                            >
-                              Lanjut
-                            </button>
-                          )}
-                          <div className="deal-card-bottom">
-                            <span className="deal-card-value">{formatRupiah(deal.value)}</span>
-                            <span className="deal-card-date">{deal.date}</span>
-                          </div>
-                          
-                          <button
-                            onClick={() => setShowActivityModal(deal.id)}
-                            style={{
-                              width: '100%',
-                              marginTop: '8px',
-                              padding: '6px',
-                              background: '#F1F5F9',
-                              color: '#475569',
-                              border: '1px solid #CBD5E1',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px'
-                            }}
-                          >
-                            📝 Riwayat & Catatan
-                          </button>
-                          {deal.stage === 'Prospecting' && techTasks.some(t => t.dealId === deal.id) && (
-                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0', fontSize: '11px', color: '#475569' }}>
-                              <div style={{ marginBottom: '6px', fontWeight: 600 }}>📅 {techTasks.find(t => t.dealId === deal.id)?.schedule?.replace('T', ' ')}</div>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                                <input
-                                  type="checkbox"
-                                  checked={techTasks.find(t => t.dealId === deal.id)?.status === 'Selesai'}
-                                  onChange={() => toggleTechTaskStatus(deal.id)}
-                                  disabled={isMonitorOnly}
-                                />
-                                <span style={{ fontWeight: 500, color: techTasks.find(t => t.dealId === deal.id)?.status === 'Selesai' ? '#10B981' : '#475569' }}>
-                                  Sudah Melakukan Meeting
-                                </span>
-                              </label>
-                            </div>
-                          )}
-                          {deal.stage === 'Proposal SPH' && (
-                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0', fontSize: '11px', color: '#475569' }}>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                                <input
-                                  type="checkbox"
-                                  checked={false}
-                                  onChange={() => advanceToNegotiation(deal.id)}
-                                  disabled={isMonitorOnly}
-                                />
-                                <span style={{ fontWeight: 500 }}>
-                                  Sudah Mengirim Proposal SPH
-                                </span>
-                              </label>
-                            </div>
-                          )}
-                          {deal.stage === 'Negotiation' && (
-                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0' }}>
-                              <label style={{ fontSize: '11px', color: '#475569', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Status Negosiasi:</label>
-                              <select
-                                value={deal.status || ''}
-                                onChange={(e) => handleNegoStatus(deal.id, e.target.value)}
-                                disabled={isMonitorOnly}
-                                style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', border: '1px solid #CBD5E1', fontSize: '11px', outline: 'none', backgroundColor: '#F8FAFC', opacity: isMonitorOnly ? 0.6 : 1 }}
-                              >
-                                <option value="">-- Pilih Status --</option>
-                                <option value="Masih Revisi">Masih Revisi</option>
-                                <option value="Disetujui">Disetujui (Closed Won)</option>
-                                <option value="Ditolak">Ditolak (Closed Lost)</option>
-                              </select>
-                            </div>
-                          )}
-                          {deal.stage === 'Closed Won' && (
-                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #10B981' }}>
-                              {deal.status === 'Tugas Teknisi Terkirim' ? (
-                                <div style={{ fontSize: '11px', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '6px', background: '#D1FAE5', borderRadius: '6px' }}>
-                                  <span>✅</span> Tugas Teknisi Terkirim
-                                </div>
-                              ) : deal.status === 'Selesai' ? (
-                                <div style={{ fontSize: '11px', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '6px', background: '#D1FAE5', borderRadius: '6px' }}>
-                                  <span>✅</span> Teknisi Selesai
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={() => openInstallModal(deal.id)}
-                                  disabled={isMonitorOnly}
-                                  style={{ width: '100%', padding: '6px', background: isMonitorOnly ? '#94A3B8' : '#10B981', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: '600', cursor: isMonitorOnly ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                                >
-                                  <span>🚚</span> Kirim ke Teknisi
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="crm-col-footer">
-                      {showAddDeal === stage ? (
-                        <div className="add-deal-form">
-                          {stage === 'Leads' ? (
-                            <>
-                              <input
-                                type="text"
-                                placeholder="Nama Kontak"
-                                value={newDeal.contact}
-                                onChange={e => setNewDeal({ ...newDeal, contact: e.target.value })}
-                                autoFocus
-                              />
-                              <input
-                                type="text"
-                                placeholder="Nama Perusahaan"
-                                value={newDeal.company}
-                                onChange={e => setNewDeal({ ...newDeal, company: e.target.value })}
-                              />
-                              <input
-                                type="email"
-                                placeholder="Email"
-                                value={newDeal.email}
-                                onChange={e => setNewDeal({ ...newDeal, email: e.target.value })}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Nomor Kontak"
-                                value={newDeal.phone}
-                                onChange={e => setNewDeal({ ...newDeal, phone: e.target.value })}
-                              />
-                              <select
-                                value={newDeal.status}
-                                onChange={e => setNewDeal({ ...newDeal, status: e.target.value })}
-                              >
-                                <option value="Tidak Terhubung">Tidak Terhubung</option>
-                                <option value="Sudah Kontrak dengan Kompetitor">Sudah Kontrak dengan Kompetitor</option>
-                                <option value="Stock Masih Ada">Stock Masih Ada</option>
-                                <option value="Tertarik">Tertarik</option>
-                              </select>
-                            </>
-                          ) : stage === 'Prospecting' ? (
-                            <>
-                              <input type="text" placeholder="Nama Deal" value={newDeal.title} onChange={e => setNewDeal({ ...newDeal, title: e.target.value })} autoFocus />
-                              <input type="text" placeholder="Nama Kontak" value={newDeal.contact} onChange={e => setNewDeal({ ...newDeal, contact: e.target.value })} />
-                              <input type="text" placeholder="Nama Perusahaan" value={newDeal.company} onChange={e => setNewDeal({ ...newDeal, company: e.target.value })} />
-                              <input type="email" placeholder="Email" value={newDeal.email} onChange={e => setNewDeal({ ...newDeal, email: e.target.value })} />
-                              <input type="text" placeholder="Nomor Kontak" value={newDeal.phone} onChange={e => setNewDeal({ ...newDeal, phone: e.target.value })} />
-                              <input type="number" placeholder="Nilai (Rp)" value={newDeal.value} onChange={e => setNewDeal({ ...newDeal, value: e.target.value })} />
-
-                              <div className="form-group-checkbox" style={{ margin: '4px 0' }}>
-                                <input type="checkbox" id="addDealNeedVisit" checked={newDeal.needVisit} onChange={e => setNewDeal({ ...newDeal, needVisit: e.target.checked })} />
-                                <label htmlFor="addDealNeedVisit" style={{ fontSize: '11px', color: '#475569' }}>Perlu Meeting / Visit Teknisi?</label>
-                              </div>
-
-                              {newDeal.needVisit && (
-                                <>
-                                  <input type="datetime-local" value={newDeal.schedule} onChange={e => setNewDeal({ ...newDeal, schedule: e.target.value })} style={{ marginBottom: '4px' }} />
-                                  <textarea rows={2} value={newDeal.address} onChange={e => setNewDeal({ ...newDeal, address: e.target.value })} placeholder="Alamat Visit" style={{ width: '100%', padding: '8px 10px', border: '1px solid #CBD5E1', borderRadius: '6px', fontSize: '12px', fontFamily: 'inherit', outline: 'none' }} />
-                                </>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <input
-                                type="text"
-                                placeholder="Nama Deal"
-                                value={newDeal.title}
-                                onChange={e => setNewDeal({ ...newDeal, title: e.target.value })}
-                                autoFocus
-                              />
-                              <input
-                                type="text"
-                                placeholder="Nama Kontak"
-                                value={newDeal.contact}
-                                onChange={e => setNewDeal({ ...newDeal, contact: e.target.value })}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Nama Perusahaan"
-                                value={newDeal.company}
-                                onChange={e => setNewDeal({ ...newDeal, company: e.target.value })}
-                              />
-                              <input
-                                type="email"
-                                placeholder="Email"
-                                value={newDeal.email}
-                                onChange={e => setNewDeal({ ...newDeal, email: e.target.value })}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Nomor Kontak"
-                                value={newDeal.phone}
-                                onChange={e => setNewDeal({ ...newDeal, phone: e.target.value })}
-                              />
-                              <input
-                                type="number"
-                                placeholder="Nilai (Rp)"
-                                value={newDeal.value}
-                                onChange={e => setNewDeal({ ...newDeal, value: e.target.value })}
-                              />
-                            </>
-                          )}
-                          <div className="add-deal-actions">
-                            <button className="add-deal-save" onClick={() => addDeal(stage)}>Simpan</button>
-                            <button className="add-deal-cancel" onClick={() => { setShowAddDeal(null); setNewDeal({ title: '', contact: '', value: '', phone: '', email: '', company: '', status: 'Tidak Terhubung', needVisit: false, schedule: '', address: '' }); }}>Batal</button>
-                          </div>
-                        </div>
-                      ) : (
-                        userRole !== 'leader sales' && userRole !== 'superadmin' ? (
-                          <button className="add-deal-btn" onClick={() => setShowAddDeal(stage)}>+ Deal</button>
-                        ) : null
-                      )}
-                    </div>
-                  </div>
-                );
-              })})()}
+                  );
+                })
+              })()}
             </div>
           </div>
 
@@ -2235,10 +2236,10 @@ function App() {
                       <div className="form-group" style={{ marginBottom: '12px' }}>
                         <div style={{ display: 'flex', gap: '16px' }}>
                           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
-                            <input type="radio" checked={advanceForm.visitType === 'Online'} onChange={() => setAdvanceForm({...advanceForm, visitType: 'Online'})} /> Online
+                            <input type="radio" checked={advanceForm.visitType === 'Online'} onChange={() => setAdvanceForm({ ...advanceForm, visitType: 'Online' })} /> Online
                           </label>
                           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
-                            <input type="radio" checked={advanceForm.visitType === 'Offline'} onChange={() => setAdvanceForm({...advanceForm, visitType: 'Offline'})} /> Offline
+                            <input type="radio" checked={advanceForm.visitType === 'Offline'} onChange={() => setAdvanceForm({ ...advanceForm, visitType: 'Offline' })} /> Offline
                           </label>
                         </div>
                       </div>
@@ -2270,157 +2271,157 @@ function App() {
             const isSimpleNote = isNegotiation || dealStage === 'Closed Won' || dealStage === 'Closed Lost';
             const isMonitorOnly = userRole === 'leader sales' || userRole === 'superadmin';
             return (
-            <div className="crm-modal-overlay">
-              <div className="crm-modal" style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '16px' }}>
+              <div className="crm-modal-overlay">
+                <div className="crm-modal" style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '16px' }}>
+                    <div>
+                      <h3 style={{ margin: 0 }}>Riwayat Aktivitas &amp; Catatan</h3>
+                      {modalDeal && <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px' }}>📌 {modalDeal.title} — <span style={{ fontWeight: 600, color: isProspecting ? '#8B5CF6' : isNegotiation ? '#F59E0B' : '#0091D5' }}>{dealStage}</span></div>}
+                    </div>
+                    <button onClick={() => setShowActivityModal(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#94A3B8' }}>&times;</button>
+                  </div>
+
+                  {/* Form Tambah */}
+                  {(dealStage === 'Proposal SPH' || isMonitorOnly) ? null : isProspecting ? (
+                    <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
+                      <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B' }}>📝 Tambah Kesimpulan Meeting</h4>
+                      <div className="form-group" style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px', display: 'block' }}>Kesimpulan</label>
+                        <textarea
+                          rows={3}
+                          value={activityForm.note}
+                          onChange={(e) => setActivityForm({ ...activityForm, note: e.target.value })}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', outline: 'none', resize: 'vertical' }}
+                          placeholder="Tuliskan kesimpulan dari meeting yang sudah dijadwalkan di Leads..."
+                        />
+                      </div>
+                      <button
+                        onClick={() => saveActivityLog('Offline', 'Kesimpulan Meeting')}
+                        disabled={!activityForm.note}
+                        style={{ background: '#8B5CF6', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: activityForm.note ? 'pointer' : 'not-allowed', opacity: activityForm.note ? 1 : 0.6, marginRight: '8px' }}
+                      >
+                        💾 Simpan Kesimpulan
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
+                      <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B' }}>+ Tambah Catatan Baru</h4>
+                      {!isSimpleNote && (
+                        <>
+                          <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                              <input type="radio" name="activityType" checked={activityForm.type === 'Online'} onChange={() => setActivityForm({ ...activityForm, type: 'Online' })} /> Online
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                              <input type="radio" name="activityType" checked={activityForm.type === 'Offline'} onChange={() => setActivityForm({ ...activityForm, type: 'Offline' })} /> Offline
+                            </label>
+                          </div>
+
+                          <div className="form-group" style={{ marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px', display: 'block' }}>
+                              {activityForm.type === 'Online' ? 'Platform (Zoom, Google Meet, WhatsApp, dll)' : 'Lokasi Meeting'}
+                            </label>
+                            <input
+                              type="text"
+                              value={activityForm.locationOrPlatform}
+                              onChange={(e) => setActivityForm({ ...activityForm, locationOrPlatform: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', outline: 'none' }}
+                              placeholder={activityForm.type === 'Online' ? 'Cth: Zoom Meeting' : 'Cth: Cafe Jakarta Pusat'}
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      <div className="form-group" style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px', display: 'block' }}>Catatan / Kesimpulan</label>
+                        <textarea
+                          rows={3}
+                          value={activityForm.note}
+                          onChange={(e) => setActivityForm({ ...activityForm, note: e.target.value })}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', outline: 'none', resize: 'vertical' }}
+                          placeholder="Tuliskan hasil meeting atau percakapan di sini..."
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => isSimpleNote ? saveActivityLog('Offline', dealStage === 'Closed Won' ? 'Catatan Deal Disetujui' : dealStage === 'Closed Lost' ? 'Catatan Deal Ditolak' : 'Catatan Negosiasi') : saveActivityLog()}
+                        disabled={!activityForm.note}
+                        style={{ background: '#10B981', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: activityForm.note ? 'pointer' : 'not-allowed', opacity: activityForm.note ? 1 : 0.6 }}
+                      >
+                        Simpan Catatan
+                      </button>
+
+                      {isNegotiation && (
+                        <div style={{ borderTop: '1px dashed #FCA5A5', marginTop: '16px', paddingTop: '16px', background: '#FEF2F2', borderRadius: '6px', padding: '12px' }}>
+                          <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#DC2626' }}>⚠️ Klien Tidak Setuju SPH?</h4>
+                          <p style={{ fontSize: '12px', color: '#64748B', margin: '0 0 12px 0' }}>Deal akan dikembalikan ke tahap Prospecting untuk menjadwalkan meeting ulang.</p>
+                          <button
+                            onClick={() => {
+                              const dealId = showActivityModal!;
+                              // 1. Log activity
+                              const newLog: ActivityLog = {
+                                id: Date.now(),
+                                dealId: dealId,
+                                date: new Date().toISOString(),
+                                type: 'Offline',
+                                locationOrPlatform: 'Re-Meeting',
+                                note: '[RE-MEETING] Klien tidak setuju dengan SPH, deal dikembalikan ke Prospecting untuk menjadwalkan meeting ulang.',
+                                author: userName || 'Sales Team'
+                              };
+                              setActivityLogs(prev => [...prev, newLog]);
+
+                              // 2. Move deal back to Prospecting & clear old meeting task, and set status to Masih Revisi
+                              setDeals(prev => prev.map(d => d.id === dealId ? { ...d, stage: 'Prospecting', status: 'Masih Revisi' } : d));
+                              setTechTasks(prev => prev.filter(t => t.dealId !== dealId));
+
+                              // 3. Close activity modal & open advance modal for re-scheduling
+                              setShowActivityModal(null);
+                              setAdvanceModal({ isOpen: true, dealId: dealId });
+                              setAdvanceForm({ title: modalDeal?.title || '', value: String(modalDeal?.value || ''), needVisit: true, visitType: 'Offline', schedule: '', address: '' });
+
+                              showToast('🔄 Deal dikembalikan ke Prospecting untuk meeting ulang', 'success');
+                            }}
+                            style={{ background: '#DC2626', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '12px' }}
+                          >
+                            🔄 Jadwalkan Meeting Ulang
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Timeline */}
                   <div>
-                    <h3 style={{ margin: 0 }}>Riwayat Aktivitas &amp; Catatan</h3>
-                    {modalDeal && <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px' }}>📌 {modalDeal.title} — <span style={{ fontWeight: 600, color: isProspecting ? '#8B5CF6' : isNegotiation ? '#F59E0B' : '#0091D5' }}>{dealStage}</span></div>}
-                  </div>
-                  <button onClick={() => setShowActivityModal(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#94A3B8' }}>&times;</button>
-                </div>
-                
-                {/* Form Tambah */}
-                {(dealStage === 'Proposal SPH' || isMonitorOnly) ? null : isProspecting ? (
-                  <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
-                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B' }}>📝 Tambah Kesimpulan Meeting</h4>
-                    <div className="form-group" style={{ marginBottom: '16px' }}>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px', display: 'block' }}>Kesimpulan</label>
-                      <textarea 
-                        rows={3} 
-                        value={activityForm.note}
-                        onChange={(e) => setActivityForm({...activityForm, note: e.target.value})}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', outline: 'none', resize: 'vertical' }}
-                        placeholder="Tuliskan kesimpulan dari meeting yang sudah dijadwalkan di Leads..."
-                      />
-                    </div>
-                    <button 
-                      onClick={() => saveActivityLog('Offline', 'Kesimpulan Meeting')}
-                      disabled={!activityForm.note}
-                      style={{ background: '#8B5CF6', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: activityForm.note ? 'pointer' : 'not-allowed', opacity: activityForm.note ? 1 : 0.6, marginRight: '8px' }}
-                    >
-                      💾 Simpan Kesimpulan
-                    </button>
-                  </div>
-                ) : (
-                  <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
-                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B' }}>+ Tambah Catatan Baru</h4>
-                    {!isSimpleNote && (
-                      <>
-                        <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
-                            <input type="radio" name="activityType" checked={activityForm.type === 'Online'} onChange={() => setActivityForm({...activityForm, type: 'Online'})} /> Online
-                          </label>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
-                            <input type="radio" name="activityType" checked={activityForm.type === 'Offline'} onChange={() => setActivityForm({...activityForm, type: 'Offline'})} /> Offline
-                          </label>
-                        </div>
-                        
-                        <div className="form-group" style={{ marginBottom: '12px' }}>
-                          <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px', display: 'block' }}>
-                            {activityForm.type === 'Online' ? 'Platform (Zoom, Google Meet, WhatsApp, dll)' : 'Lokasi Meeting'}
-                          </label>
-                          <input 
-                            type="text" 
-                            value={activityForm.locationOrPlatform} 
-                            onChange={(e) => setActivityForm({...activityForm, locationOrPlatform: e.target.value})}
-                            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', outline: 'none' }}
-                            placeholder={activityForm.type === 'Online' ? 'Cth: Zoom Meeting' : 'Cth: Cafe Jakarta Pusat'}
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    <div className="form-group" style={{ marginBottom: '16px' }}>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px', display: 'block' }}>Catatan / Kesimpulan</label>
-                      <textarea 
-                        rows={3} 
-                        value={activityForm.note}
-                        onChange={(e) => setActivityForm({...activityForm, note: e.target.value})}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', outline: 'none', resize: 'vertical' }}
-                        placeholder="Tuliskan hasil meeting atau percakapan di sini..."
-                      />
-                    </div>
-                    
-                    <button 
-                      onClick={() => isSimpleNote ? saveActivityLog('Offline', dealStage === 'Closed Won' ? 'Catatan Deal Disetujui' : dealStage === 'Closed Lost' ? 'Catatan Deal Ditolak' : 'Catatan Negosiasi') : saveActivityLog()}
-                      disabled={!activityForm.note}
-                      style={{ background: '#10B981', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: activityForm.note ? 'pointer' : 'not-allowed', opacity: activityForm.note ? 1 : 0.6 }}
-                    >
-                      Simpan Catatan
-                    </button>
-
-                    {isNegotiation && (
-                      <div style={{ borderTop: '1px dashed #FCA5A5', marginTop: '16px', paddingTop: '16px', background: '#FEF2F2', borderRadius: '6px', padding: '12px' }}>
-                        <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#DC2626' }}>⚠️ Klien Tidak Setuju SPH?</h4>
-                        <p style={{ fontSize: '12px', color: '#64748B', margin: '0 0 12px 0' }}>Deal akan dikembalikan ke tahap Prospecting untuk menjadwalkan meeting ulang.</p>
-                        <button
-                          onClick={() => {
-                            const dealId = showActivityModal!;
-                            // 1. Log activity
-                            const newLog: ActivityLog = {
-                              id: Date.now(),
-                              dealId: dealId,
-                              date: new Date().toISOString(),
-                              type: 'Offline',
-                              locationOrPlatform: 'Re-Meeting',
-                              note: '[RE-MEETING] Klien tidak setuju dengan SPH, deal dikembalikan ke Prospecting untuk menjadwalkan meeting ulang.',
-                              author: userName || 'Sales Team'
-                            };
-                            setActivityLogs(prev => [...prev, newLog]);
-
-                            // 2. Move deal back to Prospecting & clear old meeting task, and set status to Masih Revisi
-                            setDeals(prev => prev.map(d => d.id === dealId ? { ...d, stage: 'Prospecting', status: 'Masih Revisi' } : d));
-                            setTechTasks(prev => prev.filter(t => t.dealId !== dealId));
-
-                            // 3. Close activity modal & open advance modal for re-scheduling
-                            setShowActivityModal(null);
-                            setAdvanceModal({ isOpen: true, dealId: dealId });
-                            setAdvanceForm({ title: modalDeal?.title || '', value: String(modalDeal?.value || ''), needVisit: true, visitType: 'Offline', schedule: '', address: '' });
-
-                            showToast('🔄 Deal dikembalikan ke Prospecting untuk meeting ulang', 'success');
-                          }}
-                          style={{ background: '#DC2626', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '12px' }}
-                        >
-                          🔄 Jadwalkan Meeting Ulang
-                        </button>
+                    <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#1E293B' }}>Timeline Riwayat</h4>
+                    {activityLogs.filter(log => log.dealId === showActivityModal).length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px', background: '#F1F5F9', borderRadius: '8px' }}>
+                        Belum ada riwayat aktivitas untuk deal ini.
+                      </div>
+                    ) : (
+                      <div style={{ position: 'relative', paddingLeft: '16px', borderLeft: '2px solid #E2E8F0' }}>
+                        {activityLogs.filter(log => log.dealId === showActivityModal).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(log => (
+                          <div key={log.id} style={{ position: 'relative', marginBottom: '20px' }}>
+                            <div style={{ position: 'absolute', left: '-22px', top: '4px', width: '10px', height: '10px', borderRadius: '50%', background: log.type === 'Online' ? '#3B82F6' : '#F59E0B', border: '2px solid #fff' }} />
+                            <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '4px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <span style={{ fontWeight: 600, color: '#1E293B' }}>{log.author}</span>
+                              <span>•</span>
+                              <span>{new Date(log.date).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                              <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '12px', background: log.type === 'Online' ? '#DBEAFE' : '#FEF3C7', color: log.type === 'Online' ? '#1D4ED8' : '#D97706', fontSize: '10px', fontWeight: 600, marginBottom: '8px' }}>
+                                {log.type} {log.locationOrPlatform ? `- ${log.locationOrPlatform}` : ''}
+                              </div>
+                              <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap' }}>
+                                {log.note}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-                )}
-
-                {/* Timeline */}
-                <div>
-                  <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#1E293B' }}>Timeline Riwayat</h4>
-                  {activityLogs.filter(log => log.dealId === showActivityModal).length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px', background: '#F1F5F9', borderRadius: '8px' }}>
-                      Belum ada riwayat aktivitas untuk deal ini.
-                    </div>
-                  ) : (
-                    <div style={{ position: 'relative', paddingLeft: '16px', borderLeft: '2px solid #E2E8F0' }}>
-                      {activityLogs.filter(log => log.dealId === showActivityModal).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(log => (
-                        <div key={log.id} style={{ position: 'relative', marginBottom: '20px' }}>
-                          <div style={{ position: 'absolute', left: '-22px', top: '4px', width: '10px', height: '10px', borderRadius: '50%', background: log.type === 'Online' ? '#3B82F6' : '#F59E0B', border: '2px solid #fff' }} />
-                          <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '4px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span style={{ fontWeight: 600, color: '#1E293B' }}>{log.author}</span>
-                            <span>•</span>
-                            <span>{new Date(log.date).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
-                          </div>
-                          <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                            <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '12px', background: log.type === 'Online' ? '#DBEAFE' : '#FEF3C7', color: log.type === 'Online' ? '#1D4ED8' : '#D97706', fontSize: '10px', fontWeight: 600, marginBottom: '8px' }}>
-                              {log.type} {log.locationOrPlatform ? `- ${log.locationOrPlatform}` : ''}
-                            </div>
-                            <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap' }}>
-                              {log.note}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
-            </div>
             );
           })()}
 
@@ -2506,14 +2507,14 @@ function App() {
               </div>
             </div>
           </div>
-          
+
           <div className="crm-kanban-area" style={{ flex: 1, padding: 0, background: 'transparent' }}>
             <div className="crm-kanban-board">
               {POST_SALES_STAGES.map((stage) => {
                 const stageDeals = deals.filter(d => d.stage === 'Closed Won' && (d.postSalesStage === stage || (!d.postSalesStage && stage === 'Menunggu Pengiriman')));
                 return (
-                  <div 
-                    className="crm-kanban-col" 
+                  <div
+                    className="crm-kanban-col"
                     key={`post-${stage}`}
                     onDragOver={handleDragOver}
                     onDrop={() => handlePostSalesDrop(stage)}
@@ -2526,7 +2527,7 @@ function App() {
                     </div>
                     <div className="crm-col-body">
                       {stageDeals.length === 0 && (
-                         <div style={{ padding: '20px', textAlign: 'center', color: '#94A3B8', fontSize: '13px', fontStyle: 'italic' }}>Kosong</div>
+                        <div style={{ padding: '20px', textAlign: 'center', color: '#94A3B8', fontSize: '13px', fontStyle: 'italic' }}>Kosong</div>
                       )}
                       {stageDeals.map(deal => (
                         <div
@@ -2538,8 +2539,8 @@ function App() {
                         >
                           <div className="crm-deal-title">{deal.title}</div>
                           <div className="crm-deal-contact" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                             👤 {deal.contact} 
-                             {deal.phone && <span style={{ color: '#94A3B8' }}>• {deal.phone}</span>}
+                            👤 {deal.contact}
+                            {deal.phone && <span style={{ color: '#94A3B8' }}>• {deal.phone}</span>}
                           </div>
                           <div className="crm-deal-value">{formatRupiah(deal.value)}</div>
                         </div>
@@ -2552,48 +2553,48 @@ function App() {
           </div>
         </div>
         {showActivityModal !== null && (() => {
-            const modalDeal = deals.find(d => d.id === showActivityModal);
-            if(!modalDeal) return null;
-            return (
-              <div className="crm-modal-overlay">
-                 <div className="crm-modal" style={{ maxWidth: '600px' }}>
-                    <h3>Post-Sales Log: {modalDeal.title}</h3>
-                    <div className="crm-modal-form" style={{ marginTop: '20px' }}>
-                       <div className="form-group">
-                         <label>Catatan BAST / Invoice</label>
-                         <textarea rows={3} value={activityForm.note} onChange={e => setActivityForm({...activityForm, note: e.target.value})} placeholder="Catat detail pengiriman, nomor invoice, dll..." />
-                       </div>
-                        <div className="crm-modal-actions">
-                          <button className="btn-cancel" onClick={() => setShowActivityModal(null)}>Tutup</button>
-                          <button className="btn-save" onClick={() => {
-                             const newLog: ActivityLog = { id: Date.now(), dealId: modalDeal.id, date: new Date().toISOString(), type: 'Offline', locationOrPlatform: '-', note: `[POST-SALES] ${activityForm.note}`, author: userName || 'Finance/Admin' };
-                             setActivityLogs(prev => [...prev, newLog]);
-                             setShowActivityModal(null);
-                             showToast('Catatan disimpan', 'success');
-                          }} style={{ background: '#3B82F6' }}>Simpan Log</button>
+          const modalDeal = deals.find(d => d.id === showActivityModal);
+          if (!modalDeal) return null;
+          return (
+            <div className="crm-modal-overlay">
+              <div className="crm-modal" style={{ maxWidth: '600px' }}>
+                <h3>Post-Sales Log: {modalDeal.title}</h3>
+                <div className="crm-modal-form" style={{ marginTop: '20px' }}>
+                  <div className="form-group">
+                    <label>Catatan BAST / Invoice</label>
+                    <textarea rows={3} value={activityForm.note} onChange={e => setActivityForm({ ...activityForm, note: e.target.value })} placeholder="Catat detail pengiriman, nomor invoice, dll..." />
+                  </div>
+                  <div className="crm-modal-actions">
+                    <button className="btn-cancel" onClick={() => setShowActivityModal(null)}>Tutup</button>
+                    <button className="btn-save" onClick={() => {
+                      const newLog: ActivityLog = { id: Date.now(), dealId: modalDeal.id, date: new Date().toISOString(), type: 'Offline', locationOrPlatform: '-', note: `[POST-SALES] ${activityForm.note}`, author: userName || 'Finance/Admin' };
+                      setActivityLogs(prev => [...prev, newLog]);
+                      setShowActivityModal(null);
+                      showToast('Catatan disimpan', 'success');
+                    }} style={{ background: '#3B82F6' }}>Simpan Log</button>
+                  </div>
+                </div>
+                <div style={{ marginTop: '24px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B' }}>Riwayat Aktivitas & Catatan Teknisi</h4>
+                  {activityLogs.filter(log => log.dealId === showActivityModal).length === 0 ? (
+                    <div style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>Belum ada catatan aktivitas.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '200px', overflowY: 'auto', paddingRight: '8px' }}>
+                      {activityLogs.filter(log => log.dealId === showActivityModal).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(log => (
+                        <div key={log.id} style={{ padding: '12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '12px', fontWeight: 600, color: '#3B82F6' }}>{log.author}</span>
+                            <span style={{ fontSize: '11px', color: '#94A3B8' }}>{new Date(log.date).toLocaleString('id-ID')}</span>
+                          </div>
+                          <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap' }}>{log.note}</div>
                         </div>
-                     </div>
-                     <div style={{ marginTop: '24px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
-                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B' }}>Riwayat Aktivitas & Catatan Teknisi</h4>
-                        {activityLogs.filter(log => log.dealId === showActivityModal).length === 0 ? (
-                           <div style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>Belum ada catatan aktivitas.</div>
-                        ) : (
-                           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '200px', overflowY: 'auto', paddingRight: '8px' }}>
-                              {activityLogs.filter(log => log.dealId === showActivityModal).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(log => (
-                                 <div key={log.id} style={{ padding: '12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                       <span style={{ fontSize: '12px', fontWeight: 600, color: '#3B82F6' }}>{log.author}</span>
-                                       <span style={{ fontSize: '11px', color: '#94A3B8' }}>{new Date(log.date).toLocaleString('id-ID')}</span>
-                                    </div>
-                                    <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap' }}>{log.note}</div>
-                                 </div>
-                              ))}
-                           </div>
-                        )}
-                     </div>
-                 </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            );
+            </div>
+          );
         })()}
         <div id="toast" className={`toast ${toast ? `show ${toast.type}` : ''}`}>{toast?.message}</div>
       </div>
@@ -2843,22 +2844,22 @@ function App() {
               <div className="dashboard-card">
                 <div className="metric-label">Total Revenue</div>
                 <div className="metric-value" title={formatRupiah(totalRevenue).replace('IDR ', 'Rp ')}>{formatShortRupiah(totalRevenue)}</div>
-                <div className="metric-trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> +12% from last month</div>
+                <div className="metric-trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg> +12% from last month</div>
               </div>
               <div className="dashboard-card">
                 <div className="metric-label">Active Pipeline</div>
                 <div className="metric-value" title={formatRupiah(activePipeline).replace('IDR ', 'Rp ')}>{formatShortRupiah(activePipeline)}</div>
-                <div className="metric-trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> +5% from last month</div>
+                <div className="metric-trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg> +5% from last month</div>
               </div>
               <div className="dashboard-card">
                 <div className="metric-label">Win Rate</div>
                 <div className="metric-value">{winRate}%</div>
-                <div className="metric-trend down"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg> -2% from last month</div>
+                <div className="metric-trend down"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" /></svg> -2% from last month</div>
               </div>
               <div className="dashboard-card">
                 <div className="metric-label">Total Deals</div>
                 <div className="metric-value">{totalDealsCount}</div>
-                <div className="metric-trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> +8 new deals</div>
+                <div className="metric-trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg> +8 new deals</div>
               </div>
             </div>
 
@@ -2870,7 +2871,7 @@ function App() {
                     <BarChart data={pipelineData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} tickFormatter={(val) => `Rp${(val/1000000)}M`} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} tickFormatter={(val) => `Rp${(val / 1000000)}M`} />
                       <Tooltip formatter={(value: any) => formatRupiah(value).replace('IDR ', 'Rp ')} cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                       <Bar dataKey="Value" fill="#0091D5" radius={[4, 4, 0, 0]} barSize={40} />
                     </BarChart>
@@ -2935,13 +2936,13 @@ function App() {
 
     let filteredDeals = deals;
     if (reportStartDate && reportEndDate) {
-       const start = new Date(reportStartDate).getTime();
-       const end = new Date(reportEndDate).getTime() + 86400000;
-       filteredDeals = deals.filter(d => {
-          const currentYear = new Date().getFullYear();
-          const dDate = new Date(`${d.date} ${currentYear}`).getTime();
-          return dDate >= start && dDate <= end;
-       });
+      const start = new Date(reportStartDate).getTime();
+      const end = new Date(reportEndDate).getTime() + 86400000;
+      filteredDeals = deals.filter(d => {
+        const currentYear = new Date().getFullYear();
+        const dDate = new Date(`${d.date} ${currentYear}`).getTime();
+        return dDate >= start && dDate <= end;
+      });
     }
 
     const totalRevenue = filteredDeals.filter(d => d.stage === 'Closed Won').reduce((acc, curr) => acc + curr.value, 0);
@@ -2965,7 +2966,7 @@ function App() {
               <button onClick={exportToPDF} style={{ background: '#1C4E80', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}>Export to PDF</button>
             </div>
           </div>
-          
+
           <div ref={reportRef} style={{ background: '#fff', padding: '32px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
             <h2 style={{ textAlign: 'center', marginBottom: '8px' }}>Sales Performance Report</h2>
             <p style={{ textAlign: 'center', color: '#64748B', marginBottom: '32px' }}>
@@ -2973,22 +2974,22 @@ function App() {
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
-               <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
-                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>TOTAL REVENUE</div>
-                 <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{formatShortRupiah(totalRevenue)}</div>
-               </div>
-               <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
-                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>ACTIVE PIPELINE</div>
-                 <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{formatShortRupiah(activePipeline)}</div>
-               </div>
-               <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
-                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>WIN RATE</div>
-                 <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{winRate}%</div>
-               </div>
-               <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
-                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>TOTAL DEALS</div>
-                 <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{totalDealsCount}</div>
-               </div>
+              <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>TOTAL REVENUE</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{formatShortRupiah(totalRevenue)}</div>
+              </div>
+              <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>ACTIVE PIPELINE</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{formatShortRupiah(activePipeline)}</div>
+              </div>
+              <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>WIN RATE</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{winRate}%</div>
+              </div>
+              <div style={{ padding: '16px', border: '1px solid #E2E8F0', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>TOTAL DEALS</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{totalDealsCount}</div>
+              </div>
             </div>
 
             <h3 style={{ borderBottom: '2px solid #E2E8F0', paddingBottom: '8px', marginBottom: '16px' }}>Deals Overview</h3>
