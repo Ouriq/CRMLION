@@ -920,10 +920,16 @@ function App() {
     const todayStr = new Date().toISOString().split('T')[0];
 
     const roleFilteredTasks = (userRole === 'leader sales' || userRole === 'sales manager')
-      ? techTasks.filter(t => !t.title.toLowerCase().includes('pemasangan'))
+      ? techTasks.filter(t => {
+          const lowerTitle = t.title.toLowerCase();
+          const isFollowUp = lowerTitle.includes('follow-up') || lowerTitle.includes('follow up');
+          return isFollowUp || !lowerTitle.includes('pemasangan');
+        })
       : userRole === 'teknisi'
         ? techTasks.filter(t => {
           const lowerTitle = t.title.toLowerCase();
+          const isFollowUp = lowerTitle.includes('follow-up') || lowerTitle.includes('follow up');
+          if (isFollowUp) return false;
           return lowerTitle.includes('pemasangan') || lowerTitle.includes('kirim') || lowerTitle.includes('pengiriman') || lowerTitle.includes('maintenance') || lowerTitle.includes('kunjungan') || lowerTitle.includes('perbaikan');
         })
         : techTasks;
