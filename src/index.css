@@ -87,11 +87,11 @@ body, html, #root {
 }
 .btn-submit:hover { background-color: #F4A900; transform: translateY(-1px); }
 .glass-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border-radius: 35px; padding: 50px 40px; width: 340px; text-align: center;
   color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 .glass-title { font-size: 34px; font-weight: 800; margin-bottom: 5px; line-height: 1.2; }
 .glass-subtitle { font-size: 14px; font-weight: 400; margin-bottom: 50px; color: #e2e8f0; }
